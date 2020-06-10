@@ -11,25 +11,40 @@ Globals:
     Timeout: 3
     Environment:
       Variables:
-        DDB_TABLE_NAME: !Ref DynamoDBTable
+        DDB_TABLE_NAME: !Ref pollsStorageDB
 
 Resources:
-  HelloWorldFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  getPollsFunction:
+    Type: AWS::Serverless::Function 
     Properties:
-      CodeUri: hello_world/
+      CodeUri: handlers/get_polls
       Handler: app.lambda_handler
       Runtime: python3.8
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref DynamoDBTable
+            TableName: !Ref pollsStorageDB
       Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+        getPolls:
+          Type: Api
           Properties:
-            Path: /hello
-            Method: get
-  DynamoDBTable:
+            Path: /getpolls
+            Method: GET
+  addPollFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: handlers/add_poll
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref pollsStorageDB
+      Events:
+        addPoll:
+          Type: Api
+          Properties:
+            Path: /addpoll
+            Method: POST
+  pollsStorageDB:
     Type: AWS::DynamoDB::Table
     Properties: 
       AttributeDefinitions: 
@@ -41,15 +56,6 @@ Resources:
       BillingMode: PAY_PER_REQUEST
       
 Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+  pollsAppApi:
+    Description: "API Gateway endpoint URL for Prod stage for the functions"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

@@ -8,3 +8,4 @@ s3_prefix = "polls-app-backend"
 region = "eu-west-2"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
+

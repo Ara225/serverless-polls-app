@@ -75,7 +75,7 @@ def lambda_handler(event, context):
                     "error": "Database query returned an empty body. If an ID was supplied, this means there was no matching item" 
                 }),
             }
-        # If a last evaluated key is proved, we return this so the client app can use it to get the next items later
+        # If a last evaluated key is provided, we return this so the client app can use it to get the next items later
         if response.get("LastEvaluatedKey"):
             key = response["LastEvaluatedKey"]
         else:

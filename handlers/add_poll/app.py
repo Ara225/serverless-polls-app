@@ -4,7 +4,7 @@ import os
 from boto3.dynamodb.conditions import Key
 import random
 import string
-
+from datetime import datetime, timedelta
 def lambda_handler(event, context):
     """Sample pure Lambda function
 
@@ -28,7 +28,7 @@ def lambda_handler(event, context):
     """
     if event.get("body"):
         body = json.loads(event["body"].replace("'", '"'))
-        if not (body.get("question") and body.get("answersList") and body.get('correctAnswerIndex')):
+        if not body.get("question") or not body.get("answersList"):
             return {
                 "statusCode": 500,
                 "body": json.dumps({
@@ -47,15 +47,34 @@ def lambda_handler(event, context):
     dynamodb = boto3.resource('dynamodb')
     
     table = dynamodb.Table(os.environ["DDB_TABLE_NAME"])
+    # Create dict to contain the number of votes for each
+    responses = {}
+    for answer in body["answersList"]:
+        responses[answer] = 0
+    
+    # Sort out the expiry date
+    if body.get("expiresIn"):
+        try:
+            if int(body["expiresIn"]) < 90:
+                expiresIn = (datetime.now() + timedelta(days=int(body["expiresIn"]))).isoformat()
+            else:
+                expiresIn = (datetime.now() + timedelta(days=30)).isoformat()
+        except BaseException as e:
+            print(e)
+    else:
+        expiresIn = (datetime.now() + timedelta(days=30)).isoformat()
 
+    # Create unique ID for the poll
     randomString = ''.join([random.choice(string.ascii_letters 
             + string.digits) for n in range(32)]) 
     poll = {
-            "id": randomString,
-            'question': body["question"],
-            'answersList': body["answersList"],
-            'correctAnswerIndex': body['correctAnswerIndex']
-        }
+                "id": randomString,
+                'question': body["question"],
+                'answersList': body["answersList"],
+                'responses': responses,
+                'created': datetime.now().isoformat(),
+                "expires": expiresIn
+           }
     response = table.put_item(
         Item=poll
     )

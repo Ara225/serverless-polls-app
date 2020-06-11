@@ -26,24 +26,7 @@ def lambda_handler(event, context):
 
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
-    if event.get("body"):
-        body = json.loads(event["body"].replace("'", '"'))
-        if not body.get("question") or not body.get("answersList"):
-            return {
-                "statusCode": 500,
-                "body": json.dumps({
-                    "success": False,
-                    "error": "Unable to validate the content of the body of the request"
-                }),
-            }
-    else:
-        return {
-            "statusCode": 500,
-            "body": json.dumps({
-                "success": False,
-                "error": "Request body not supplied"
-            }),
-        }
+    body = json.loads(event["body"].replace("'", '"'))
     dynamodb = boto3.resource('dynamodb')
     
     table = dynamodb.Table(os.environ["DDB_TABLE_NAME"])
@@ -55,10 +38,7 @@ def lambda_handler(event, context):
     # Sort out the expiry date
     if body.get("expiresIn"):
         try:
-            if int(body["expiresIn"]) < 90:
-                expiresIn = (datetime.now() + timedelta(days=int(body["expiresIn"]))).isoformat()
-            else:
-                expiresIn = (datetime.now() + timedelta(days=30)).isoformat()
+            expiresIn = (datetime.now() + timedelta(days=int(body["expiresIn"]))).isoformat()
         except BaseException as e:
             print(e)
     else:
@@ -78,6 +58,7 @@ def lambda_handler(event, context):
     response = table.put_item(
         Item=poll
     )
+    
     return {
         "statusCode": 200,
         "body": json.dumps({

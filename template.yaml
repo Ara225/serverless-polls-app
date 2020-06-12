@@ -43,7 +43,7 @@ Resources:
           Type: Api
           Properties:
             Path: /registervote
-            Method: GET
+            Method: POST
   addPollFunction:
     Type: AWS::Serverless::Function 
     Properties:

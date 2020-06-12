@@ -2,7 +2,7 @@ import json
 import boto3
 import os
 from boto3.dynamodb.conditions import Key
-
+from decimal import Decimal
 def lambda_handler(event, context):
     """Sample pure Lambda function
 
@@ -24,21 +24,33 @@ def lambda_handler(event, context):
 
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
-    dynamodb = boto3.resource('dynamodb')
-    
-    table = dynamodb.Table(os.environ["DDB_TABLE_NAME"])
-    print(event["queryStringParameters"])
+    if os.environ['AWS_SAM_LOCAL']:
+        dynamodb = boto3.resource('dynamodb', endpoint_url='http://dynamo:8000')
+        table = dynamodb.Table("pollsStorageDB")
+    elif 'local' == os.environ['APP_STAGE']:
+        dynamodb = boto3.resource('dynamodb', endpoint_url='http://localhost:8000')
+        table = dynamodb.Table("pollsStorageDB")
+    else:
+        dynamodb = boto3.resource('dynamodb')
+        table = dynamodb.Table(os.environ["DDB_TABLE_NAME"])
+    body = json.loads(event["body"].replace("'", '"'))
     try:
         response = table.update_item(
             Key={
-                'id': event["queryStringParameters"]["id"]
+                'id': body["id"]
             },
-            UpdateExpression="set responses." + event["queryStringParameters"]["response"] + " = responses." + event["queryStringParameters"]["response"] + "+ :r",
+            UpdateExpression="set responses." + body["response"] + " = responses." + body["response"] + "+ :r",
             ExpressionAttributeValues={
-                ':r': event["queryStringParameters"]["value"]
+                ':r': Decimal(1)
             },
             ReturnValues="UPDATED_NEW"
         )
+        return {
+            "statusCode": 200,
+            "body": json.dumps({
+                "success": True
+            }), 
+        }
     except BaseException as e:
         print(e)
         return {

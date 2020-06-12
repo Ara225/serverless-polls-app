@@ -65,9 +65,9 @@ def lambda_handler(event, context):
         if event.get("queryStringParameters"):
             print(event["queryStringParameters"])
             if event["queryStringParameters"].get("continueKey") and event["queryStringParameters"].get("limit"):
-                response = table.scan(ExclusiveStartKey=event["queryStringParameters"]["continueKey"], Limit=int(event["queryStringParameters"]["limit"]))
+                response = table.scan(ExclusiveStartKey={"id": event["queryStringParameters"]["continueKey"]}, Limit=int(event["queryStringParameters"]["limit"]))
             elif event["queryStringParameters"].get("continueKey"):
-                response = table.scan(ExclusiveStartKey=event["queryStringParameters"]["continueKey"])
+                response = table.scan(ExclusiveStartKey={"id": event["queryStringParameters"]["continueKey"]})
             elif event["queryStringParameters"].get("limit"):
                 response = table.scan(Limit=int(event["queryStringParameters"]["limit"]))
             else:
@@ -84,7 +84,7 @@ def lambda_handler(event, context):
             }
         # If a last evaluated key is provided, we return this so the client app can use it to get the next items later
         if response.get("LastEvaluatedKey"):
-            key = response["LastEvaluatedKey"]
+            key = response["LastEvaluatedKey"]['id']
         else:
             key = None
         return {

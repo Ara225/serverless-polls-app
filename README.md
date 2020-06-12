@@ -1,7 +1,39 @@
 # polls-app-backend
 ## API 
 ### /addpoll 
-##### Body Validation schema
+
+#### Sample Request
+Create poll with no expiry date
+```bash
+curl http://endpoint_url/addpoll --data "{'question': 'What?', 'answersList': ['Yes', 'No']}" -H 'Content-Type: application/json'
+```
+Create poll with expiry date
+```bash
+curl http://endpoint_url/addpoll --data "{'question': 'What?', 'answersList': ['Yes', 'No'], 'expiresIn': 30}" -H 'Content-Type: application/json'
+```
+#### Query params
+None
+
+#### Body params
+* answersList - list of options for the poll
+* question - Poll question
+* expiresIn - Days that the poll will run for
+
+#### Returns
+```json
+{
+    "success": true, 
+    "polls": {
+          "id": "dA735dLfjdrGbP3WvFisTZioOIHw8SHK", 
+          "question": "blah", 
+          "answersList": ["blah", "blah2"],
+          "responses": {"blah": 0, "blah2": 0}, 
+          "created": "2020-06-11T19:53:46.967607", 
+          "expires": "2020-07-11T19:53:46.967510"
+    }
+}
+```
+#### Body Validation schema
 ```json
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
@@ -27,47 +59,41 @@
     "required": ["question", "answersList"]
 }
 ```
-##### Sample Request
-```bash
-curl http://endpoint_url/addpoll --data "{'question': 'What?', 'answersList': ['Yes', 'No']}" -H 'Content-Type: application/json'
-```
 
-##### Query params
-None
-##### Returns
-```json
-{
-    "success": true, 
-    "polls": {
-          "id": "dA735dLfjdrGbP3WvFisTZioOIHw8SHK", 
-          "question": "blah", 
-          "answersList": ["blah", "blah2"],
-          "responses": {"blah": 0, "blah2": 0}, 
-          "created": "2020-06-11T19:53:46.967607", 
-          "expires": "2020-07-11T19:53:46.967510"
-    }
-}
-```
+
 ### /getpolls
 Either get all the polls (with primitive pagination using the continueKey returned and the request parameter limit), or a
 single poll
-##### Sample Request
+#### Sample Request
 All polls (unless DB truncates request)
 ```bash
 curl http://endpoint_url/getpolls
 ```
 Get 50 polls
 ```bash
-curl http://endpoint_url/getpolls?limit=1
+curl http://endpoint_url/getpolls?limit=10
 ```
+Continue previous request
 ```bash
-curl http://endpoint_url/getpolls?
+curl http://endpoint_url/getpolls?continueKey=RII9kijL1NfbXgttyF0olVoOzBjFSHDR
 ```
-##### Query params
+Continue previous request with limit
+```bash
+curl http://endpoint_url/getpolls?continueKey=RII9kijL1NfbXgttyF0olVoOzBjFSHDR&limit=10
+```
+Get specific poll
+```bash
+curl http://endpoint_url/getpolls?id=BbaWTmurV6TdODERIk9r9mPRmN4A3x4y
+```
+#### Query params
 * id - ID of the pool
 * limit - the amount of polls to get with this request
 * continueKey - The continueKey the API returned with the last request, to get the next keys
-##### Returns
+
+#### Body params
+None
+
+#### Returns
 ```json
 {
     "success": true,
@@ -85,15 +111,20 @@ curl http://endpoint_url/getpolls?
 
 ### /registervote
 Register vote for a poll in the DB
-##### Sample Request 
+#### Sample Request 
+Register a vote for a poll
+```bash
+curl.exe http://endpoint_url/registervote --data "{'response': 'Yes', 'id': 'T5dXfl8SyRGvNju56zB5ErhINnLKBQqh'}"
+```
 
-
-##### Query params
+#### Query params
 None
 
+#### Body params
+* response - string - The poll response that the vote is for
+* id - string - the ID of the poll
 
-## Test Locally
-
+## Test API Locally
 #### Create the dynamoDB container
 Assuming you're in the project folder:
 ```bash

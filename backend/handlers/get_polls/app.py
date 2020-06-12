@@ -34,7 +34,6 @@ def lambda_handler(event, context):
         dynamodb = boto3.resource('dynamodb')
         table = dynamodb.Table(os.environ["DDB_TABLE_NAME"])
     if event.get("queryStringParameters"):
-        print(event)
         if event["queryStringParameters"].get("id"):
             try:
                 print("Params: ", event["queryStringParameters"])
@@ -43,11 +42,11 @@ def lambda_handler(event, context):
                 )
                 return {
                     'headers': {
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-        },
-        "statusCode": 200,
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    },
+                    "statusCode": 200,
                     "body": json.dumps({
                         "success": True,
                         "polls": response['Items']
@@ -57,11 +56,11 @@ def lambda_handler(event, context):
                 print(e)
                 return {
                     'headers': {
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-        },
-        "statusCode": 500,
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    },
+                    "statusCode": 500,
                     "body": json.dumps({
                         "success": False,
                         "error": "Unable to retrieve items" 
@@ -87,15 +86,15 @@ def lambda_handler(event, context):
         if response['Items'] == []:
             return {
                 'headers': {
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-        },
-        "statusCode": 500,
-                "body": json.dumps({
-                    "success": False,
-                    "error": "Database query returned an empty body. If an ID was supplied, this means there was no matching item" 
-                }),
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
+                "statusCode": 500,
+                    "body": json.dumps({
+                        "success": False,
+                        "error": "Database query returned an empty body. If an ID was supplied, this means there was no matching item" 
+                    }),
             }
         # If a last evaluated key is provided, we return this so the client app can use it to get the next items later
         if response.get("LastEvaluatedKey"):
@@ -104,14 +103,15 @@ def lambda_handler(event, context):
             key = None
         return {
             'headers': {
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-        },
-        "statusCode": 200,
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+            },
+            "statusCode": 200,
             "body": json.dumps({
                 "success": True,
                 "polls": response['Items'],
+                "count": response['Count'],
                 "continueKey": key
             }),
         }
@@ -119,11 +119,11 @@ def lambda_handler(event, context):
         print(e)
         return {
             'headers': {
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-        },
-        "statusCode": 500,
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+            },
+            "statusCode": 500,
             "body": json.dumps({
                 "success": False,
                 "error": "Unable to retrieve items" 

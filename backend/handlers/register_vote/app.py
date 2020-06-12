@@ -47,11 +47,11 @@ def lambda_handler(event, context):
         )
         return {
             'headers': {
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-        },
-        "statusCode": 200,
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+            },
+            "statusCode": 200,
             "body": json.dumps({
                 "success": True
             }), 
@@ -59,10 +59,10 @@ def lambda_handler(event, context):
     except BaseException as e:
         print(e)
         return {
-            'headers': {
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        'headers': {
+             'Access-Control-Allow-Headers': 'Content-Type',
+             'Access-Control-Allow-Origin': '*',
+             'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
         },
         "statusCode": 500,
             "body": json.dumps({

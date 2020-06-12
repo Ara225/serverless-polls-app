@@ -42,7 +42,12 @@ def lambda_handler(event, context):
                     KeyConditionExpression=Key('id').eq(event["queryStringParameters"]["id"])
                 )
                 return {
-                    "statusCode": 200,
+                    'headers': {
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        },
+        "statusCode": 200,
                     "body": json.dumps({
                         "success": True,
                         "polls": response['Items']
@@ -51,7 +56,12 @@ def lambda_handler(event, context):
             except BaseException as e:
                 print(e)
                 return {
-                    "statusCode": 500,
+                    'headers': {
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        },
+        "statusCode": 500,
                     "body": json.dumps({
                         "success": False,
                         "error": "Unable to retrieve items" 
@@ -76,7 +86,12 @@ def lambda_handler(event, context):
             response = table.scan()
         if response['Items'] == []:
             return {
-                "statusCode": 500,
+                'headers': {
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        },
+        "statusCode": 500,
                 "body": json.dumps({
                     "success": False,
                     "error": "Database query returned an empty body. If an ID was supplied, this means there was no matching item" 
@@ -88,7 +103,12 @@ def lambda_handler(event, context):
         else:
             key = None
         return {
-            "statusCode": 200,
+            'headers': {
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        },
+        "statusCode": 200,
             "body": json.dumps({
                 "success": True,
                 "polls": response['Items'],
@@ -98,7 +118,12 @@ def lambda_handler(event, context):
     except BaseException as e:
         print(e)
         return {
-            "statusCode": 500,
+            'headers': {
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        },
+        "statusCode": 500,
             "body": json.dumps({
                 "success": False,
                 "error": "Unable to retrieve items" 

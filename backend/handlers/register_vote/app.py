@@ -46,7 +46,12 @@ def lambda_handler(event, context):
             ReturnValues="UPDATED_NEW"
         )
         return {
-            "statusCode": 200,
+            'headers': {
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        },
+        "statusCode": 200,
             "body": json.dumps({
                 "success": True
             }), 
@@ -54,7 +59,12 @@ def lambda_handler(event, context):
     except BaseException as e:
         print(e)
         return {
-            "statusCode": 500,
+            'headers': {
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        },
+        "statusCode": 500,
             "body": json.dumps({
                 "success": False,
                 "error": "Unable to register vote" 

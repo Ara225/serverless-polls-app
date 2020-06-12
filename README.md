@@ -27,6 +27,13 @@
     "required": ["question", "answersList"]
 }
 ```
+##### Sample Request
+```bash
+curl http://endpoint_url/addpoll --data "{'question': 'What?', 'answersList': ['Yes', 'No']}" -H 'Content-Type: application/json'
+```
+
+##### Query params
+None
 ##### Returns
 ```json
 {
@@ -44,6 +51,18 @@
 ### /getpolls
 Either get all the polls (with primitive pagination using the continueKey returned and the request parameter limit), or a
 single poll
+##### Sample Request
+All polls (unless DB truncates request)
+```bash
+curl http://endpoint_url/getpolls
+```
+Get 50 polls
+```bash
+curl http://endpoint_url/getpolls?limit=1
+```
+```bash
+curl http://endpoint_url/getpolls?
+```
 ##### Query params
 * id - ID of the pool
 * limit - the amount of polls to get with this request
@@ -63,6 +82,16 @@ single poll
     "continueKey": { "id": "key" }
 }
 ```
+
+### /registervote
+Register vote for a poll in the DB
+##### Sample Request 
+
+
+##### Query params
+None
+
+
 ## Test Locally
 
 #### Create the dynamoDB container
@@ -82,8 +111,7 @@ Code detects that it's being run locally and calls the local DB instead of one i
 ```bash
 cd ..
 sam build --use-container
-sam local start-api --docker-network abp-sam-backend --skip-pull-image --profile default --parameter-override
---profile default --parameter-overrides 'ParameterKey=StageName,ParameterValue=local'
+sam local start-api --docker-network abp-sam-backend --skip-pull-image --profile default --parameter-overrides 'ParameterKey=StageName,ParameterValue=local'
 ```
 
 ## Deploy

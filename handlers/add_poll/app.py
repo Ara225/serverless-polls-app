@@ -27,10 +27,10 @@ def lambda_handler(event, context):
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
     body = json.loads(event["body"].replace("'", '"'))
-    if os.environ['AWS_SAM_LOCAL']:
+    if os.environ.get('AWS_SAM_LOCAL'):
         dynamodb = boto3.resource('dynamodb', endpoint_url='http://dynamo:8000')
         table = dynamodb.Table("pollsStorageDB")
-    elif 'local' == os.environ['APP_STAGE']:
+    elif 'local' == os.environ.get('APP_STAGE'):
         dynamodb = boto3.resource('dynamodb', endpoint_url='http://localhost:8000')
         table = dynamodb.Table("pollsStorageDB")
     else:

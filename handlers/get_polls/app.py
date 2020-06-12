@@ -2,7 +2,7 @@ import json
 import boto3
 import os
 from boto3.dynamodb.conditions import Key
-
+import simplejson as json
 def lambda_handler(event, context):
     """Sample pure Lambda function
 
@@ -24,10 +24,10 @@ def lambda_handler(event, context):
 
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
-    if os.environ['AWS_SAM_LOCAL']:
+    if os.environ.get('AWS_SAM_LOCAL'):
         dynamodb = boto3.resource('dynamodb', endpoint_url='http://dynamo:8000')
         table = dynamodb.Table("pollsStorageDB")
-    elif 'local' == os.environ['APP_STAGE']:
+    elif 'local' == os.environ.get('APP_STAGE'):
         dynamodb = boto3.resource('dynamodb', endpoint_url='http://localhost:8000')
         table = dynamodb.Table("pollsStorageDB")
     else:

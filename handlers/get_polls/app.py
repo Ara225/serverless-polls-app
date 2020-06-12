@@ -30,7 +30,7 @@ def lambda_handler(event, context):
         print(event)
         if event["queryStringParameters"].get("id"):
             try:
-                print("Params: ", event["queryStringParameters"]["id"])
+                print("Params: ", event["queryStringParameters"])
                 response = table.query(
                     KeyConditionExpression=Key('id').eq(event["queryStringParameters"]["id"])
                 )

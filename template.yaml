@@ -29,6 +29,21 @@ Resources:
           Properties:
             Path: /getpolls
             Method: GET
+  registerVoteFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: handlers/register_vote
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref pollsStorageDB
+      Events:
+        registerVote:
+          Type: Api
+          Properties:
+            Path: /registervote
+            Method: GET
   addPollFunction:
     Type: AWS::Serverless::Function 
     Properties:

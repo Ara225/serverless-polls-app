@@ -1,7 +1,44 @@
 # polls-app-backend
+## Overview
+A serverless API, built using AWS Lambda, AWS API gateway and AWS DynamoDB and deployed using a SAM template.
+Core backend for some sort of social polling service/web app, though it primarily exists to be a learning experience 
+for me.
+
+## Test API Locally
+#### Create the dynamoDB container
+Assuming you're in the main root project folder:
+```bash
+cd ./sam-local-resources
+docker-compose up -d dynamo
+```
+(docker-compose.yml taken from [rynop's answer on StackOverflow](https://stackoverflow.com/questions/48926260/connecting-aws-sam-local-with-dynamodb-in-docker))
+
+#### Create the table 
+```bash
+aws dynamodb create-table --cli-input-json file://local-db-create.json --endpoint-url http://localhost:8000
+```
+#### Run API locally via SAM
+Code detects that it's being run locally and calls the local DB instead of one in AWS
+```bash
+cd ..
+sam build --use-container
+sam local start-api --docker-network abp-sam-backend --skip-pull-image --profile default --parameter-overrides 'ParameterKey=StageName,ParameterValue=local'
+```
+
+## Deploy
+```bash
+sam build --use-container
+sam deploy --guided
+```
+I additionally added validation to the API, so that I didn't have to write code to validate in the Lambada,
+This has to be added manually as SAM doesn't allow for that to be defined in the template.
+
+## TODO
+* The system for registering votes is a bit insecure at the moment as it requires no authentication. As I'm not actually running this
+  right now, I'm leaving this as is for simplicities sake.
+
 ## API 
 ### /addpoll 
-
 #### Sample Request
 Create poll with no expiry date
 ```bash
@@ -125,29 +162,22 @@ None
 * response - string - The poll response that the vote is for
 * id - string - the ID of the poll
 
-## Test API Locally
-#### Create the dynamoDB container
-Assuming you're in the backend folder:
-```bash
-cd ./sam-local-resources
-docker-compose up -d dynamo
-```
-(docker-compose.yml taken from [rynop's answer on StackOverflow](https://stackoverflow.com/questions/48926260/connecting-aws-sam-local-with-dynamodb-in-docker))
-
-#### Create the table 
-```bash
-aws dynamodb create-table --cli-input-json file://local-db-create.json --endpoint-url http://localhost:8000
-```
-#### Run API locally via SAM
-Code detects that it's being run locally and calls the local DB instead of one in AWS
-```bash
-cd ..
-sam build --use-container
-sam local start-api --docker-network abp-sam-backend --skip-pull-image --profile default --parameter-overrides 'ParameterKey=StageName,ParameterValue=local'
-```
-
-## Deploy
-```bash
-sam build --use-container
-sam deploy --guided
+#### Body Validation schema
+```json
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Vote",
+    "type": "object",
+    "properties": {
+        "response": {
+            "description": "The response to vote for",
+            "type": "string"
+        },
+        "id": {
+            "description": "The ID of the poll",
+            "type": "string"
+        }
+    },
+    "required": ["response", "id"]
+}
 ```

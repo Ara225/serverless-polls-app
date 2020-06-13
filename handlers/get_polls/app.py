@@ -36,22 +36,35 @@ def lambda_handler(event, context):
     if event.get("queryStringParameters"):
         if event["queryStringParameters"].get("id"):
             try:
-                print("Params: ", event["queryStringParameters"])
                 response = table.query(
                     KeyConditionExpression=Key('id').eq(event["queryStringParameters"]["id"])
                 )
-                return {
-                    'headers': {
-                        'Access-Control-Allow-Headers': 'Content-Type',
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                    },
-                    "statusCode": 200,
-                    "body": json.dumps({
-                        "success": True,
-                        "polls": response['Items']
-                    }),
-                }
+                if response['Items'] == []:
+                    return {
+                        'headers': {
+                            'Access-Control-Allow-Headers': 'Content-Type',
+                            'Access-Control-Allow-Origin': '*',
+                            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                        },
+                        "statusCode": 500,
+                            "body": json.dumps({
+                                "success": False,
+                                "error": "Database query returned an empty body. If an ID was supplied, this means there was no matching item" 
+                            }),
+                    }
+                else:
+                    return {
+                        'headers': {
+                            'Access-Control-Allow-Headers': 'Content-Type',
+                            'Access-Control-Allow-Origin': '*',
+                            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                        },
+                        "statusCode": 200,
+                        "body": json.dumps({
+                            "success": True,
+                            "polls": response['Items']
+                        }),
+                    }
             except BaseException as e:
                 print(e)
                 return {

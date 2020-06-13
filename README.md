@@ -4,7 +4,20 @@ A serverless API, built using AWS Lambda, AWS API gateway and AWS DynamoDB and d
 Core backend for some sort of social polling service/web app, though it primarily exists to be a learning experience 
 for me.
 
-## Test API Locally
+## Run tests locally
+Setup the local DB and create the table as described in the Run API Locally section below. It's easiest to use the
+ test_handler.py in tests/unit, which contains unit tests for practically everything.
+
+```bash
+cd tests/unit
+python test_handler.py
+```
+Alternatively, sam local should work with the events in the events folder (except for the register vote). e.g.
+```bash
+sam local invoke getPollsFunction -e ./events/getPollsEvent.json --docker-network abp-sam-backend
+```
+
+## Run API Locally
 #### Create the dynamoDB container
 Assuming you're in the main root project folder:
 ```bash
@@ -40,7 +53,7 @@ This has to be added manually as SAM doesn't allow for that to be defined in the
 ## API 
 ### /addpoll 
 #### Sample Request
-Create poll with no expiry date
+Create poll with default expiry date (30 days)
 ```bash
 curl http://endpoint_url/addpoll --data "{'question': 'What?', 'answersList': ['Yes', 'No']}" -H 'Content-Type: application/json'
 ```

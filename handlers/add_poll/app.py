@@ -6,7 +6,8 @@ import random
 import string
 from datetime import datetime, timedelta
 def lambda_handler(event, context):
-    """Sample pure Lambda function
+    """
+    Add a poll. See README.md for more
 
     Parameters
     ----------
@@ -27,6 +28,8 @@ def lambda_handler(event, context):
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
     body = json.loads(event["body"].replace("'", '"'))
+    # This allows the function to run locally by sending requests to a local DynamoDB. Option one is for when it's
+    #  being run by SAM, option two for when the tests are being run, and three for production
     if os.environ.get('AWS_SAM_LOCAL'):
         dynamodb = boto3.resource('dynamodb', endpoint_url='http://dynamo:8000')
         table = dynamodb.Table("pollsStorageDB")
@@ -36,7 +39,7 @@ def lambda_handler(event, context):
     else:
         dynamodb = boto3.resource('dynamodb')
         table = dynamodb.Table(os.environ["DDB_TABLE_NAME"])
-    # Create dict to contain the number of votes for each
+    # Create dict to contain the number of votes for each possible response
     responses = {}
     for answer in body["answersList"]:
         responses[answer] = 0

@@ -66,6 +66,15 @@ def test_register_vote_invalid_id():
     assert "success" in ret["body"]
     assert data["success"] == False
 
+def test_register_vote_invalid_response():
+    event = json.load(open("../../events/registerVoteEvent.json"))
+    event["body"] = "{\"id\": \"" + environ['SamplePollId'] + "\", \"response\": \"Maybe\"}" 
+    ret = registervote.lambda_handler(event, "")
+    data = json.loads(ret["body"])
+    assert ret["statusCode"] == 500
+    assert "success" in ret["body"]
+    assert data["success"] == False
+
 if __name__ == "__main__":
     environ['APP_STAGE'] = "local"
     environ['SamplePollId'] = add_a_sample_poll()

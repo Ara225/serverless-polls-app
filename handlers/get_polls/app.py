@@ -3,8 +3,10 @@ import boto3
 import os
 from boto3.dynamodb.conditions import Key
 import simplejson as json
+
 def lambda_handler(event, context):
-    """Sample pure Lambda function
+    """
+    Get either all polls, a specified number of polls or a specific poll. See README.md for more
 
     Parameters
     ----------
@@ -24,6 +26,8 @@ def lambda_handler(event, context):
 
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
+    # This allows the function to run locally by sending requests to a local DynamoDB. Option one is for when it's
+    #  being run by SAM, option two for when the tests are being run, and three for production
     if os.environ.get('AWS_SAM_LOCAL'):
         dynamodb = boto3.resource('dynamodb', endpoint_url='http://dynamo:8000')
         table = dynamodb.Table("pollsStorageDB")

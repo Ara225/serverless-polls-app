@@ -5,14 +5,13 @@ Core backend for some sort of social polling service/web app, though it primaril
 for me.
 
 ## Run tests locally
-Setup the local DB and create the table as described in the Run API Locally section below. It's easiest to use the
- test_handler.py in tests/unit, which contains unit tests for practically everything.
+Setup the local DB and create the table as described in the Run API Locally section below. It's easiest to use the test_handler.py in tests/unit, which contains unit tests for all elements of the API
 
 ```bash
 cd tests/unit
 python test_handler.py
 ```
-Alternatively, sam local should work with the events in the events folder (except for the register vote). e.g.
+Alternatively, sam local should work with the JSON events in the events folder (except for the register vote event which requires an ID to be added). For example:
 ```bash
 sam local invoke getPollsFunction -e ./events/getPollsEvent.json --docker-network abp-sam-backend
 ```
@@ -46,9 +45,12 @@ sam deploy --guided
 I additionally added validation to the API, so that I didn't have to write code to validate in the Lambada,
 This has to be added manually as SAM doesn't allow for that to be defined in the template.
 
-## TODO
-* The system for registering votes is a bit insecure at the moment as it requires no authentication. As I'm not actually running this
-  right now, I'm leaving this as is for simplicities sake.
+## Known Issues/TODO
+* The system for registering votes is a bit insecure at the moment as it requires no authentication. As this is an exercise in API design rather than a production product, I'm leaving that as is for now. 
+* The system allows for two polls with the same question. There's some advantages to this: they could have different answers, and
+it's commonplace for this to be allowed on proper social networks so users of this app (if they existed) would expect it, so I'm leaving as is.
+* The polls have expiry dates but nothing enforces that. Need to have a Lambda to run once a day and remove them
+
 
 ## API 
 ### /addpoll 
@@ -119,7 +121,7 @@ All polls (unless DB truncates request)
 ```bash
 curl http://endpoint_url/getpolls
 ```
-Get 50 polls
+Get 10 polls
 ```bash
 curl http://endpoint_url/getpolls?limit=10
 ```

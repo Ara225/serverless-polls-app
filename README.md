@@ -49,7 +49,6 @@ This has to be added manually as SAM doesn't allow for that to be defined in the
 * The system for registering votes is a bit insecure at the moment as it requires no authentication. As this is an exercise in API design rather than a production product, I'm leaving that as is for now. 
 * The system allows for two polls with the same question. There's some advantages to this: they could have different answers, and
 it's commonplace for this to be allowed on proper social networks so users of this app (if they existed) would expect it, so I'm leaving as is.
-* The polls have expiry dates but nothing enforces that. Need to have a Lambda to run once a day and remove them
 
 
 ## API 
@@ -63,6 +62,7 @@ Create poll with expiry date
 ```bash
 curl http://endpoint_url/addpoll --data "{'question': 'What?', 'answersList': ['Yes', 'No'], 'expiresIn': 30}" -H 'Content-Type: application/json'
 ```
+N.B. - Expired polls are deleted by DynamoDB itself because TTL is enabled on the DB
 #### Query params
 None
 

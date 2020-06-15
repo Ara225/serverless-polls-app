@@ -5,6 +5,7 @@ from boto3.dynamodb.conditions import Key
 import random
 import string
 from datetime import datetime, timedelta
+from decimal import Decimal
 def lambda_handler(event, context):
     """
     Add a poll. See README.md for more
@@ -47,11 +48,11 @@ def lambda_handler(event, context):
     # Sort out the expiry date
     if body.get("expiresIn"):
         try:
-            expiresIn = (datetime.now() + timedelta(days=int(body["expiresIn"]))).isoformat()
+            expiresIn = (datetime.now() + timedelta(days=int(body["expiresIn"]))).timestamp()
         except BaseException as e:
             print(e)
     else:
-        expiresIn = (datetime.now() + timedelta(days=30)).isoformat()
+        expiresIn = (datetime.now() + timedelta(days=30)).timestamp()
 
     # Create unique ID for the poll
     randomString = ''.join([random.choice(string.ascii_letters 
@@ -61,8 +62,8 @@ def lambda_handler(event, context):
                 'question': body["question"],
                 'answersList': body["answersList"],
                 'responses': responses,
-                'created': datetime.now().isoformat(),
-                "expires": expiresIn
+                'created': datetime.now().timestamp(),
+                "expires": Decimal(expiresIn)
            }
     response = table.put_item(
         Item=poll
